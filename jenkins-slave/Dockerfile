@@ -1,16 +1,30 @@
-FROM ubuntu:16.04
+FROM jenkins/inbound-agent
 
 USER root
 
 ENV DOTNET_RUNTIME_VERSION=2.2 \
     DOTNET_SDK_VERSION=2.2
 
-# Install Docker CLI
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates
-RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-RUN echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" > /etc/apt/sources.list.d/docker.list
-RUN apt-get update && apt-get install -y docker-engine
+USER root
 
+# Install the latest Docker CE binaries and add user `jenkins` to the docker group
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install apt-transport-https \
+      ca-certificates \
+      curl \
+      gnupg2 \
+      software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey && \
+    add-apt-repository \
+      "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+      $(lsb_release -cs) \
+      stable" && \
+   apt-get update && \
+   apt-get -y --no-install-recommends install docker-ce && \
+   apt-get clean && \
+   usermod -aG docker jenkins
+
+#install dotnet core and sdk
 RUN apt-get update                                                          && \
     apt-get install -y --no-install-recommends wget ruby curl apt-transport-https gpg && \
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor     \
@@ -21,4 +35,5 @@ RUN apt-get update                                                          && \
     apt-get install -y python python-pip                                    && \
     apt-get install -y --no-install-recommends dotnet-runtime-$DOTNET_RUNTIME_VERSION dotnet-sdk-$DOTNET_SDK_VERSION
 
+# drop back to the regular jenkins user - good practice
 USER jenkins
