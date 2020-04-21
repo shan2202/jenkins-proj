@@ -1,0 +1,10 @@
+amazon-ecs
+aws-credentials
+credentials-binding
+aws-java-sdk
+git 
+matrix-auth 
+workflow-aggregator 
+docker-workflow 
+blueocean 
+credentials-binding

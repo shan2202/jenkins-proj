@@ -1,0 +1,75 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS Fargate jenkins container Task",
+    "Resources": {
+        "requiresCompatibilities": [
+            "FARGATE"
+        ],
+        "inferenceAccelerators": [],
+        "containerDefinitions": [
+            {
+                "name": "Jenkis",
+                "image": "jenkins/jenkins:2.75-alpine",
+                "memoryReservation": "2048",
+                "cpu": "1024",
+                "resourceRequirements": null,
+                "essential": true,
+                "portMappings": [
+                    {
+                        "containerPort": "8080",
+                        "protocol": "tcp"
+                    }
+                ],
+                "environment": null,
+                "secrets": null,
+                "mountPoints": [
+                    {
+                        "sourceVolume": "data-volume",
+                        "containerPath": "/var/jenkins_home",
+                        "readOnly": ""
+                    }
+                ],
+                "volumesFrom": null,
+                "hostname": null,
+                "user": null,
+                "workingDirectory": null,
+                "extraHosts": null,
+                "logConfiguration": {
+                    "logDriver": "awslogs",
+                    "options": {
+                        "awslogs-group": "/ecs/Jenkins-master",
+                        "awslogs-region": "us-east-1",
+                        "awslogs-stream-prefix": "ecs"
+                    }
+                },
+                "ulimits": null,
+                "dockerLabels": null,
+                "dependsOn": null,
+                "repositoryCredentials": {
+                    "credentialsParameter": ""
+                }
+            }
+        ],
+        "volumes": [
+            {
+                "efsVolumeConfiguration": {
+                    "rootDirectory": "/",
+                    "transitEncryption": "DISABLED",
+                    "authorizationConfig": {
+                        "iam": "DISABLED",
+                        "accessPointId": ""
+                    },
+                    "fileSystemId": "fs-1fbbbb9f"
+                },
+                "name": "data-volume"
+            }
+        ],
+        "networkMode": "awsvpc",
+        "memory": "4096",
+        "cpu": "2048",
+        "executionRoleArn": "<create_new>",
+        "family": "Jenkins-master",
+        "taskRoleArn": "arn:aws:iam::377693735981:role/ECSTaskRole",
+        "tags": []
+    }
+}
