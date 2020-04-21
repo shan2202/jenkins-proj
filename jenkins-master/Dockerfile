@@ -12,10 +12,6 @@ RUN /usr/local/bin/install-plugins.sh git matrix-auth workflow-aggregator docker
 # RUN /usr/local/bin/install-plugins.sh $(cat $JENKINS_REF/plugins/plugins.txt | tr '\n' ' ')
 # RUN /usr/local/bin/install-plugins.sh < $JENKINS_REF/plugins.txt
 
-# Setting up environment variables for Jenkins admin user
-ENV JENKINS_USER admin
-ENV JENKINS_PASS password
-
 # Skip the initial setup wizard
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
